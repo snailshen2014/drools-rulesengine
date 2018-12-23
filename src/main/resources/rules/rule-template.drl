@@ -1,0 +1,18 @@
+template header
+
+ruleSeq
+eventType
+rules
+
+
+template "alert"
+
+rule "alert_@{ruleSeq}"
+when
+    $deviceData: @{eventType}(@{rules});
+then
+    action.transpond($deviceData);
+  
+end
+
+end template

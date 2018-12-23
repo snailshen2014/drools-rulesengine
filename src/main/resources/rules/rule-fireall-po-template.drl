@@ -1,0 +1,30 @@
+template header
+
+ruleSeq
+eventType
+rules
+ruleId
+subEventType
+subrules
+item
+
+import java.util.ArrayList;
+
+template "rulesengine-filter"
+
+
+
+rule "filter_@{ruleSeq}"
+when
+	Topic($topicId :topicId , ruleIdList contains @{ruleId});
+	$deviceData: @{eventType}(@{rules} && topicId == $topicId);
+	$items : ArrayList( size >= 1 )
+		from collect (@{subEventType}(@{subrules} && time >= $deviceData.startTime && time <= $deviceData.endTime) 
+					  from $deviceData.@{item} ;) ;
+then
+    action.transpond($topicId,$deviceData,$items,"@{item}",@{ruleId},1);
+  
+end
+
+
+end template

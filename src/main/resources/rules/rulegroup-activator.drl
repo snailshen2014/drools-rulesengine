@@ -1,0 +1,24 @@
+
+/*
+Agenda groups allow you to place rules into groups, and to place those groups onto a stack. The stack has push/pop bevaviour. 
+Calling "setFocus" places the group onto the stack.because stateless session no java api for get Agenda,
+so by default rule to activate agenda-group
+
+#statefuleKession agenda-group api:
+Agenda agenda = ksession.getAgenda();
+agenda.getAgendaGroup( "report" ).setFocus();
+agenda.getAgendaGroup( "calculation" ).setFocus();
+ksession.fireAllRules();
+*/
+
+
+import java.util.Date;
+
+rule "Rules-Group activator"
+salience 5
+when
+	$activator:RuleGroupActivator();
+then
+	System.out.println("Rule group id:" + $activator.getId() + " will be activated at:" + new Date());
+	kcontext.getKnowledgeRuntime().getAgenda().getAgendaGroup($activator.getId()).setFocus();
+end

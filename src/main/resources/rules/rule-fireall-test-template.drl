@@ -1,0 +1,41 @@
+template header
+
+ruleSeq
+eventType
+rules
+ruleId
+subEventType
+subrules
+item
+
+import java.util.ArrayList;
+import com.alibaba.fastjson.JSONObject;
+
+
+template "rulesengine-filter"
+
+
+rule "reserve_@{ruleSeq}"
+when
+	Topic(ruleIdList contains @{ruleId});
+	$json : JSONObject(@{rules});
+	$proxy :RuleProxy();
+	$remain : ArrayList( size >= 1)
+		from collect( JSONObject(@{subrules}) from $json.getJSONArray("@{item}"));
+then
+    action.transpond($json,$remain,$proxy,"@{item}",@{ruleId},1);
+
+end
+
+rule "filter_@{ruleSeq}"
+when
+	Topic(ruleIdList contains @{ruleId});
+	$json : JSONObject(@{rules});
+	$proxy :RuleProxy();
+	$remain : ArrayList( size >= 1)
+		from collect( JSONObject( !(@{subrules})) from $json.getJSONArray("@{item}"));
+then
+    action.transpond($json,$remain,$proxy,"@{item}",@{ruleId},2);
+
+end
+end template

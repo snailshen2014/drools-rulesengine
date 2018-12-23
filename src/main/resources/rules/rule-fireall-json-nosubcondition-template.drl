@@ -1,0 +1,28 @@
+template header
+
+ruleSeq
+rules
+ruleId
+groupId
+
+import java.util.ArrayList;
+import com.alibaba.fastjson.JSONObject;
+
+template "rulesengine-filter"
+
+rule "transpond_platform_@{ruleSeq}"
+/*all condition elements be evaluated by agenda when rules fired ,even if the first condtion element is false,so add agenda-group.
+only activate id's group
+*/
+agenda-group "@{groupId}"
+salience @{ruleId}
+when
+	Topic(ruleIdList contains @{ruleId});
+	$json : JSONObject(@{rules});
+	$proxy :RuleProxy();
+then
+	Action action = new Action();
+    action.transpond($json,$proxy,@{ruleId},1);
+
+end
+end template

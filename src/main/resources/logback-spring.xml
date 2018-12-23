@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 1.Logbacks Status Printer Status Messages and dynamic Log Configurations 
+	Logback includes a StatusPrinter: please add debug=”true” debug = “true” 
+	causes Logback at Startup to dump the Status of the configuration file – 
+	very handy. 2.Logback scans Configuration (automagically re-configuration) 
+	another very useful attribute is Scan=”true” scan=”true” allows you to change 
+	the Configuration File while your application is running – so its very easy 
+	to add a Class with Debug Level while testing a running application. If scan=”true” 
+	Logback scans for changes (default: every 60 seconds) and if Logback founds 
+	changes, Logback reconfigures itself I really like this feature. You can 
+	even register a status listener to supervise logbacks internal state. -->
+<configuration debug="false" scan="true">
+	
+	<property name="LEVEL" value="INFO" />
+	
+	<property name="PRINT_LOG_BASE_PATH" value="/export/Logs/iot.rulesengine/" />
+	
+	<contextName>iot.rulesengine</contextName>
+	
+	<jmxConfigurator />
+	
+	<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss" />
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${PRINT_LOG_BASE_PATH}stdout.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${PRINT_LOG_BASE_PATH}stdout.%d{yyyy-MM-dd}.log</fileNamePattern>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>${LEVEL}</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%date [%file:%line] [%level] %msg%n</Pattern>
+		</layout>
+	</appender>
+	
+	<appender name="STDERR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${PRINT_LOG_BASE_PATH}stderr.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${PRINT_LOG_BASE_PATH}stderr.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${LEVEL}</level>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%date [%file:%line] [%level] %msg%n</Pattern>
+        </layout>
+    </appender>
+	
+	<appender name ="ASYNC_STDOUT" class= "ch.qos.logback.classic.AsyncAppender">  
+           <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->  
+           <discardingThreshold >0</discardingThreshold>  
+           <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->  
+           <queueSize>512</queueSize>  
+          <appender-ref ref ="STDOUT"/>  
+          <includeCallerData>true</includeCallerData>
+     </appender> 
+     
+     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%date [%file:%line] [%level] %msg%n</Pattern>
+		</layout>
+	</appender>
+     <logger name="com.syj.iot">
+		<appender-ref ref="STDOUT" />
+	</logger>
+     
+     <logger name="ASYNC_STDOUT">  
+      <appender-ref ref="STDOUT"/>
+    </logger>
+    
+     <logger name="STDERR">
+        <appender-ref ref="STDERR" />
+     </logger>
+    <!--
+	<root level="info">
+		<appender-ref ref="ASYNC_STDOUT"/>
+	</root>
+  -->
+	
+</configuration>
