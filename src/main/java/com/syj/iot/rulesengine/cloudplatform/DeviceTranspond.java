@@ -39,12 +39,12 @@ public class DeviceTranspond extends TranspondStrategy {
 				Map<String, String> sysParams = new HashMap<>();
 				sysParams.put("sysRuleInit", StringUtil.random(6));
 				password = SignUtil.sign(sysParams, StringUtil.random(6), "hmacsha1");
-				JedisUtil.getInstance().hset(emqKey, "password", password);
+				
 			}
 			String topic = this.topic;
 			String pubSub = JedisUtil.getInstance().hget(emqAclKey, topic);
 			if (pubSub == null) {
-				JedisUtil.getInstance().hset(emqAclKey, topic, this.pubSubType);
+				
 			}
 
 			long t = System.currentTimeMillis();
@@ -53,7 +53,7 @@ public class DeviceTranspond extends TranspondStrategy {
 
 			mqttMessage.setPayload(data.getBytes());
 			mqttMessage.setQos(1);
-			EmqClient.publishMsg(topic, sysMqttclientId, ruleUserKey, password, mqttMessage);
+			
 		} catch (Exception e) {
 			logger.error("Send topic data error.");
 		}
